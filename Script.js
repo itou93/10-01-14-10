@@ -39,7 +39,16 @@ let nearLogTimeout = null;
 
 // 画面制御関数
 function startAR() {
+    // 説明画面を隠す
     document.getElementById('explanation-screen').style.display = 'none';
+    
+    // A-Frameのシーンを取得して手動でMindARをスタートさせる
+    const sceneEl = document.querySelector('a-scene');
+    const arSystem = sceneEl.systems['mindar-image-system'];
+    
+    if (arSystem) {
+        arSystem.start(); // ここで初めてカメラが起動する
+    }
 }
 
 // モーダルを開くとき（初期表示では動画一覧をクリアして隠しておく）
@@ -220,12 +229,15 @@ window.addEventListener('DOMContentLoaded', () => {
             }, 1500);
         });
 
-        marker.addEventListener('markerLost', function() {
-            const videoAttr = this.querySelector('a-video');
-            const video = videoAttr ? document.querySelector(videoAttr.getAttribute('src')) : null;
-            if (video) {
-                video.pause();
-            }
+       marker.addEventListener('markerLost', function() {
+    // タイマーのクリアだけを行い、表示されているモーダルやボタンは消さない
+    clearTimeout(markerTimers[this.id]);
+
+    const videoAttr = this.querySelector('a-video');
+    const video = videoAttr ? document.querySelector(videoAttr.getAttribute('src')) : null;
+    if (video) {
+        video.pause();
+         }
         });
     });
 });
