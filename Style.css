@@ -377,3 +377,7 @@ body {
     text-align: center;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
+/* カメラ映像が引き伸ばされるのを防ぐCSS */
+video {
+  object-fit: cover !important;
+}
