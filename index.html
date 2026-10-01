@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>越総 ARナビ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* 全体のベーススタイル */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 余白を埋める浮遊背景パーツ */
+        .bg-decorations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .decor-item {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            animation: float 6s ease-in-out infinite alternate;
+        }
+
+        /* アイコン配置 */
+        .item-kougyou1 { top: 8%; left: 8%; animation-delay: 0s; font-size: 52px; }
+        .item-kougyou2 { bottom: 12%; right: 10%; animation-delay: 2s; font-size: 46px; }
+        .item-shougyou1 { top: 12%; right: 8%; animation-delay: 1s; font-size: 48px; }
+        .item-shougyou2 { bottom: 25%; left: 6%; animation-delay: 3s; font-size: 42px; }
+        .item-fukushoku1 { top: 48%; left: 4%; animation-delay: 1.5s; font-size: 48px; }
+        .item-fukushoku2 { bottom: 8%; right: 28%; animation-delay: 0.5s; font-size: 40px; }
+        .item-shokumotsu1 { top: 52%; right: 5%; animation-delay: 2.5s; font-size: 52px; }
+        .item-shokumotsu2 { top: 10%; left: 28%; animation-delay: 1.8s; font-size: 42px; }
+        .item-ar1 { bottom: 10%; left: 22%; animation-delay: 0.8s; font-size: 48px; }
+        .item-ar2 { top: 6%; right: 26%; animation-delay: 2.2s; font-size: 40px; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-22px) rotate(12deg); }
+        }
+
+        /*  メインのカード型容器（サイズアップ！） */
+        .app-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.93);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 45px 32px; /* 余白を広げて重厚感をアップ */
+            width: 100%;
+            max-width: 480px; /* 横幅を 400px → 480px に大きく拡大 */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        /* ヘッダー部分 */
+        .app-header {
+            margin-bottom: 32px;
+        }
+
+        .app-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px; /* 少し大きく */
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .app-title {
+            font-size: 30px; /* タイトルも大きめに */
+            color: #1e293b;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        /* メインボタンエリア */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px; /* ボタン同士の間隔も少し広げました */
+        }
+
+        /* 共通ボタン基本設定 */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 18px 20px; /* ボタンの押しやすさ（高さ）をアップ */
+            font-size: 18px; /* 文字サイズを16px → 18pxに拡大 */
+            font-weight: 700;
+            border: none;
+            border-radius: 18px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 各ボタンの色定義 */
+        .btn-ar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-stamp {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+        }
+
+        .btn-survey {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-usage {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            font-size: 16px;
+        }
+
+        .btn-usage:hover {
+            background: #e2e8f0;
+        }
+
+        /* アプリの使い方 */
+        .guide-box {
+            display: none;
+            margin-top: 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 18px;
+            text-align: left;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .guide-box h4 {
+            color: #0f172a;
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .guide-box ol {
+            padding-left: 20px;
+        }
+
+        .guide-box li {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-decorations">
+        <i class="fa-solid fa-gear decor-item item-kougyou1"></i>
+        <i class="fa-solid fa-screwdriver-wrench decor-item item-kougyou2"></i>
+        <i class="fa-solid fa-calculator decor-item item-shougyou1"></i>
+        <i class="fa-solid fa-chart-line decor-item item-shougyou2"></i>
+        <i class="fa-solid fa-scissors decor-item item-fukushoku1"></i>
+        <i class="fa-solid fa-shirt decor-item item-fukushoku2"></i>
+        <i class="fa-solid fa-utensils decor-item item-shokumotsu1"></i>
+        <i class="fa-solid fa-cake-candles decor-item item-shokumotsu2"></i>
+        <i class="fa-solid fa-vr-cardboard decor-item item-ar1"></i>
+        <i class="fa-solid fa-graduation-cap decor-item item-ar2"></i>
+    </div>
+
+    <div class="app-card">
+        <div class="app-header">
+            <span class="app-badge">越谷総合技術高校</span>
+            <h1 class="app-title">AR コシソウGO</h1>
+            <p class="app-subtitle">校内をめぐってスタンプを集めよう！</p>
+        </div>
+
+        <div class="btn-group">
+    <a href="./videoMaya.html" class="btn btn-ar">
+        <i class="fa-solid fa-camera"></i>
+        ARモードを起動する
+    </a>
+
+    <a href="./map.html" class="btn btn-stamp">
+        <i class="fa-solid fa-stamp"></i>
+        スタンプラリーを開く
+    </a>
+
+    <a href="https://forms.gle/NvS4azoim9Pduo2w6" class="btn btn-survey">
+        <i class="fa-solid fa-pen-to-square"></i>
+        アンケートに答える
+    </a>
+
+        <button type="button" class="btn btn-usage" id="toggleGuide">
+        <i class="fa-solid fa-circle-question"></i>
+        アプリの使い方
+        </button>
+    </div>
+
+        <div class="guide-box" id="guideBox">
+            <h4><i class="fa-solid fa-circle-info" style="color: #3b82f6;"></i> アプリのあそびかた</h4>
+            <ol>
+                <li><strong>「ARモードを起動」</strong>を押してカメラを許可します。</li>
+                <li>校内にある<strong>ARマーカー</strong>をかざすと、キャラや案内動画が出現！</li>
+                <li>スポットを巡って<strong>スタンプコンプリート</strong>を目指しましょう！</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleGuide');
+        const guideBox = document.getElementById('guideBox');
+
+        toggleBtn.addEventListener('click', () => {
+            if (guideBox.style.display === 'block') {
+                guideBox.style.display = 'none';
+            } else {
+                guideBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

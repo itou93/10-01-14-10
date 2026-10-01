@@ -1,0 +1,402 @@
+body {
+    font-family: Arial, sans-serif, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Meiryo";
+    text-align: center;
+    background-color: aliceblue;
+    padding: 15px 10px;
+    margin: 0;
+    user-select: none;
+}
+
+h1 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+p {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+/* フロア切り替えボタン */
+.floor-selector {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.floor-btn {
+    padding: 8px 16px;
+    background-color: #e0e0e0;
+    border: 2px solid #ccc;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.floor-btn.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #0056b3;
+}
+
+/* 上下エリア切替インジケーター & ボタン */
+.area-control {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.area-indicator {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.area-btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.area-btn {
+    padding: 6px 14px;
+    background-color: #f8f9fa;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.area-btn:active {
+    background-color: #ddd;
+}
+
+/* マップ表示エリア（枠） */
+.map-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 350px; /* 表示窓の高さ */
+    margin: 0 auto 15px;
+    background: #ffffff;
+    border: 4px solid #718093;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    touch-action: pan-x;
+}
+
+/* 画像とピンをまとめる内部ラッパー（ベース設定） */
+.map-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: transform 0.8s ease-out;
+}
+
+/* 平面図画像 */
+.map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* フロア別個別調整 */
+
+/* --- 1F --- */
+.floor-1f .map-content {
+    height: 180%;
+    transform: translateY(0%);
+}
+.map-container.floor-1f.view-bottom .map-content {
+    transform: translateY(-48%);
+}
+
+/* --- 2F (物理室等がある階) --- */
+.floor-2f .map-content {
+    height: 220%;
+    transform: translateY(0%);
+}
+.map-container.floor-2f.view-bottom .map-content {
+    transform: translateY(-38%); /* ここで物理室まで引き上げ */
+}
+
+/* --- 3F --- */
+.floor-3f .map-content {
+    height: 190% !important;
+    transform: translateY(0%) !important;
+}
+.map-container.floor-3f.view-bottom .map-content {
+    transform: translateY(-48%) !important;
+}
+
+/* --- 4F --- */
+.floor-4f .map-content {
+    height: 190%;
+    transform: translateY(0%);
+}
+.map-container.floor-4f.view-bottom .map-content {
+    transform: translateY(-46%);
+}
+
+/* --- 5F (上下移動しない階) --- */
+.map-container.full-view .map-content {
+    height: 100%;
+    transform: none !important;
+}
+
+/* ピン配置用の透明レイヤー */
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* 階層ごとの表示切り替え */
+.floor-layer {
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+
+.floor-layer.active {
+    display: block;
+}
+
+/* マップ上のスタンプ（ピン） */
+.stamp {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 3px solid #ccc;
+    color: #333;
+    font-weight: bold;
+    font-size: 10px;
+    position: absolute;
+    z-index: 20;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+}
+
+/* 押せる状態（青く発光） */
+.stamp.ready {
+    background-color: #00d2d3;
+    border: 3px solid #01a3a4;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(0, 210, 211, 0.8);
+    animation: pulse 1.5s infinite;
+}
+
+/* 獲得済み状態（オレンジ） */
+.stamp.active {
+    background-color: #ff9f43;
+    border: 3px solid #e67e22;
+    color: #fff;
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.5);
+    animation: none;
+}
+
+/* パルス波形アニメーション */
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.08); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 戻るボタン */
+.btn-back {
+    display: inline-block;
+    padding: 10px 24px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+/* スタンプ詳細モーダル（ポップアップ画面） */
+.stamp-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.stamp-modal-card {
+    background-color: #fff;
+    width: 320px;
+    padding: 24px 20px;
+    border-radius: 16px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    height: 18px;
+}
+
+/* 押印演出のステージ */
+.stamp-stage {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/*スタンプを見た目を画像に変える*/
+.stamp.active,
+.modal-stamp-spot.active {
+    font-size: 0; /* 文字を非表示にする */
+    background-image: url('ito.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent; /* 背景色を透明にする */
+    border: none; /* 枠線を消す */
+}
+/* 中央のスタンプボタン */
+.modal-stamp-spot {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 4px dashed #bdc3c7;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #95a5a6;
+    transition: transform 0.2s ease, background-color 0.3s, border-color 0.3s;
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+    box-sizing: border-box;
+    touch-action: none;
+}
+
+.modal-stamp-spot.ready {
+    border: 4px solid #00d2d3;
+    background-color: #e0f7fa;
+    color: #00838f;
+    box-shadow: 0 0 20px rgba(0, 210, 211, 0.5);
+}
+
+.modal-stamp-spot.pressing {
+    animation: shake 0.1s infinite;
+}
+
+.modal-stamp-spot.active {
+    border: 4px solid #e67e22;
+    background-color: #ff9f43;
+    color: #fff;
+    font-size: 32px;
+    box-shadow: 0 6px 20px rgba(230, 126, 34, 0.5);
+    cursor: default;
+}
+
+/* 右上のハンコ演出 */
+.stamp-tool {
+    position: absolute;
+    top: 0; right: 0;
+    width: 50px; height: 50px;
+    background-color: #e74c3c;
+    border: 3px solid #c0392b;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    z-index: 15;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    pointer-events: none;
+}
+
+.stamp-tool::after {
+    content: "ハンコ";
+}
+
+/* 長押し時のプログレスゲージ（SVG） */
+.progress-ring {
+    position: absolute;
+    top: 20px; left: 20px;
+    width: 180px;
+    height: 180px;
+    pointer-events: none;
+    z-index: 20;
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: transparent;
+    stroke: #00d2d3;
+    stroke-width: 8;
+    stroke-dasharray: 452;
+    stroke-dashoffset: 452;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+/* 演出アニメーション */
+@keyframes shake {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(0.98) rotate(-2deg); }
+    50% { transform: scale(0.98) rotate(2deg); }
+    75% { transform: scale(0.98) rotate(-1deg); }
+    100% { transform: scale(1) rotate(1deg); }
+}
+
+@keyframes popImpact {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}

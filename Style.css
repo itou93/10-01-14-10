@@ -1,0 +1,379 @@
+/* 全体基本設定 */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 戻るボタン */
+.btn-back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 28px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: background-color 0.2s;
+}
+
+.btn-back:active {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000000;
+}
+
+/* 解放動画ボタン */
+.btn-collection {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background-color: #f59e0b;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    border: 2px solid #ffffff;
+    font-weight: bold;
+    font-size: 28px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.btn-collection:active {
+    transform: scale(0.95);
+}
+
+/* モーダル共通背景 */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 20000;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: #ffffff;
+    width: 95%;           
+    max-width: 600px;     
+    padding: 24px;
+    border-radius: 20px;
+    text-align: center;
+    max-height: 90vh;     
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #222;
+    border-bottom: 2px dashed #ddd;
+    padding-bottom: 10px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.dept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.dept-button-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2列に綺麗に並べる */
+  gap: 12px;                             /* ボタン同士の縦横のすき間 */
+  margin: 20px 0;                        /* 上下の外側余白（タイトルや閉じるボタンとの間隔） */
+  padding: 0 10px;                       /* 左右の内側余白 */
+}
+
+.dept-btn {
+     padding: 12px 8px;                     /* ボタン内の上下・左右の余白 */
+      font-size: 14px;                       /* 文字サイズ調整 */
+      font-weight: bold;
+      color: white;
+      background-color: #4f46e5;             /* 紫系の背景色 */
+      border: none;
+    border-radius: 12px;                   /* 角丸 */
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    word-break: keep-all;                  /* 途中で変な改行を防ぐ */
+}
+
+/* --- 近くの読み取り対象通知ログ --- */
+.near-log-container {
+    position: fixed;
+    bottom: -120px; /* 通常時は画面下に隠す */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 420px;
+    z-index: 25000;
+    transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+}
+
+/* マーカー検出時に表示するクラス */
+.near-log-container.show {
+    bottom: 30px;
+}
+
+.near-log-box {
+    background: rgba(15, 23, 42, 0.92);
+    border: 2px solid #10b981;
+    border-radius: 16px;
+    padding: 12px 16px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.log-icon {
+    font-size: 26px;
+}
+
+.log-text {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.log-text strong {
+    font-size: 14px;
+    color: #34d399;
+    display: block;
+}
+
+.log-text p {
+    margin: 2px 0 0 0;
+    font-size: 11px;
+    color: #cbd5e1;
+}
+
+.log-btn {
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.log-btn:active {
+    transform: scale(0.95);
+    background: #059669;
+}
+
+.dept-btn:active {
+    transform: scale(0.95);
+    background: #3730a3;
+}
+
+#dept-video-list, #collection-list {
+    overflow-y: auto;
+    padding-right: 4px;
+    flex-grow: 1;
+    max-height: 60vh;
+}
+
+.video-item {
+    background: #f8fafc;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    text-align: left;
+}
+
+.video-item.locked {
+    background: #e2e8f0;
+    border: 2px dashed #94a3b8;
+    text-align: center;
+    padding: 20px 12px;
+}
+
+.secret-box {
+    background: #cbd5e1;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.secret-icon {
+    font-size: 40px;
+    font-weight: bold;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.modal-btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.modal-btn:active {
+    transform: scale(0.95);
+}
+
+.modal-btn.close-btn {
+    background: #ef4444;
+    color: white;
+    
+    /* 大きさと余白の調整 */
+    font-size: 18px;            /* 文字を大きくする */
+    font-weight: bold;          /* 文字を太字に */
+    padding: 14px 40px;         /* 上下14px、左右40pxのゆったりした余白 */
+    border: none;
+    border-radius: 30px;        /* 丸みをつけて押しやすいデザインに */
+    
+    /* 配置と間隔の調整 */
+    display: block;             /* 中央寄せ用の設定 */
+    margin: 25px auto 10px;     /* 上に25pxの余白を作り、左右中央に配置 */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 少し立体感を出す */
+}
+
+/* スタート説明画面 */
+#explanation-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.bg-decorations {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.decor-item {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.55);
+    animation: float 6s ease-in-out infinite alternate;
+}
+
+.item-1 { top: 10%; left: 10%; animation-delay: 0s; font-size: 50px; }
+.item-2 { bottom: 15%; right: 12%; animation-delay: 2s; font-size: 45px; }
+.item-3 { top: 15%; right: 10%; animation-delay: 1s; font-size: 48px; }
+.item-4 { bottom: 20%; left: 8%; animation-delay: 3s; font-size: 40px; }
+.item-5 { top: 50%; left: 5%; animation-delay: 1.5s; font-size: 48px; }
+.item-6 { top: 52%; right: 6%; animation-delay: 2.5s; font-size: 50px; }
+
+@keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-20px) rotate(12deg); }
+}
+
+.card {
+    position: relative;
+    z-index: 1;
+    background: #fdfbf7;
+    width: 88%;
+    max-width: 400px;
+    padding: 35px 28px;
+    border: 2px solid #333;
+    outline: 5px solid #fdfbf7;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    text-align: center;
+    border-radius: 20px;
+}
+
+.card h1 {
+    font-size: 24px;
+    color: #222;
+    margin-top: 0;
+    margin-bottom: 16px;
+    border-bottom: 2px dashed #ccc;
+    padding-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.card p {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    border: none;
+    padding: 14px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    transition: transform 0.1s ease;
+}
+
+.start-btn:active {
+    transform: scale(0.95);
+}
+
+/* マップ誘導ポップアップ */
+#stamp-dialog {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 30000;
+    justify-content: center;
+    align-items: center;
+}
+
+.stamp-dialog-box {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
